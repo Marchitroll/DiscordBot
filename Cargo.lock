@@ -328,6 +328,8 @@ version = "0.1.0"
 dependencies = [
  "dotenvy",
  "poise",
+ "serde_json",
+ "tempfile",
  "tokio",
  "tracing",
  "tracing-subscriber",
