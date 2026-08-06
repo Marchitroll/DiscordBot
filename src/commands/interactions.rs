@@ -18,6 +18,9 @@ pub async fn handle_interaction(
     match interaction {
         serenity::Interaction::Component(component) => {
             let custom_id = &component.data.custom_id;
+            if custom_id.starts_with("ttt_") {
+                return crate::commands::tictactoe::handle_move(ctx, component, data).await;
+            }
             if !custom_id.starts_with("confession_") {
                 return Ok(());
             }

@@ -2,6 +2,7 @@ pub mod confession;
 mod general;
 pub mod interactions;
 pub mod setup;
+pub mod tictactoe;
 
 use crate::{Data, Error};
 
@@ -12,5 +13,6 @@ pub fn all() -> Vec<poise::Command<Data, Error>> {
         general::http(),
         confession::confesion(),
         setup::confesiones_setup(),
+        tictactoe::tictactoe(),
     ]
 }

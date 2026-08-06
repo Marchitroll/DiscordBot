@@ -7,6 +7,7 @@ use tokio::sync::RwLock;
 pub struct Data {
     pub confession_config: RwLock<Option<commands::confession::ConfessionConfig>>,
     pub confession_cooldowns: RwLock<std::collections::HashMap<serenity::UserId, std::time::Instant>>,
+    pub tictactoe_games: RwLock<std::collections::HashMap<serenity::UserId, commands::tictactoe::TicTacToeGame>>,
 }
 
 impl Data {
@@ -150,6 +151,7 @@ async fn main() {
                 Ok(Data {
                     confession_config: RwLock::new(loaded_config),
                     confession_cooldowns: RwLock::new(std::collections::HashMap::new()),
+                    tictactoe_games: RwLock::new(std::collections::HashMap::new()),
                 })
             })
         })

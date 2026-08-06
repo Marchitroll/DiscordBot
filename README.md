@@ -89,6 +89,7 @@ Para detener el proceso, presionar `Ctrl + C`.
 | `/http` | Muestra una imagen de estado HTTP rotando entre 5 proveedores. | `code` (número entero) |
 | `/confesion` | Envía una confesión para revisión en moderación sin registrar el autor. | `texto` (cadena de texto) |
 | `/confesiones-setup` | Configura los canales. Si se omiten parámetros, el bot **crea canales nuevos** automáticamente (requiere permisos de gestión). Si se especifican canales preexistentes, valida los permisos de acceso e informa al administrador de cualquier ajuste manual requerido. | `canal_moderacion` (opcional), `canal_publico` (opcional) |
+| `/tictactoe` | Inicia una partida de 3 en raya contra el bot. | `dificultad` (opcional: Fácil/Difícil, por defecto Fácil) |
 
 ## Sistema de Confesiones
 
