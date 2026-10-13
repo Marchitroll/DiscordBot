@@ -71,6 +71,16 @@ async fn on_error(error: poise::FrameworkError<'_, Data, Error>) {
                 .send(poise::CreateReply::default().content(msg).ephemeral(true))
                 .await;
         }
+        poise::FrameworkError::ArgumentParse { error, ctx, .. } => {
+            let msg = format!(
+                "❌ Faltan argumentos o son inválidos para el comando `{}`: {}.\nPor favor verifica los parámetros requeridos.",
+                ctx.command().name,
+                error
+            );
+            let _ = ctx
+                .send(poise::CreateReply::default().content(msg).ephemeral(true))
+                .await;
+        }
         poise::FrameworkError::Command { error, ctx, .. } => {
             tracing::error!("Error ejecutando comando '{}': {:?}", ctx.command().name, error);
             let _ = ctx
@@ -112,9 +122,15 @@ async fn main() {
         .options(poise::FrameworkOptions {
             commands: commands::all(),
             on_error: |error| Box::pin(on_error(error)),
-            event_handler: |ctx, event, framework, data| {
+            event_handler: |framework, event| {
                 Box::pin(async move {
-                    commands::interactions::handle_interaction(ctx, event, framework, data).await
+                    commands::interactions::handle_interaction(
+                        framework.serenity_context,
+                        event,
+                        framework,
+                        framework.user_data().await,
+                    )
+                    .await
                 })
             },
             ..Default::default()

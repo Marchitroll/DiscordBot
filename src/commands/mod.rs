@@ -13,6 +13,9 @@ pub fn all() -> Vec<poise::Command<Data, Error>> {
         general::http(),
         confession::confesion(),
         setup::confesiones_setup(),
+        setup::confesiones_deshacer_setup(),
+        setup::deshacer_setup(),
+        setup::confesiones_config(),
         tictactoe::tictactoe(),
     ]
 }

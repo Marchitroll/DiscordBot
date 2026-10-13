@@ -88,7 +88,9 @@ Para detener el proceso, presionar `Ctrl + C`.
 | `/echo` | Repite el texto ingresado por el usuario. | `message` (cadena de texto) |
 | `/http` | Muestra una imagen de estado HTTP rotando entre 5 proveedores. | `code` (número entero) |
 | `/confesion` | Envía una confesión para revisión en moderación sin registrar el autor. | `texto` (cadena de texto) |
-| `/confesiones-setup` | Configura los canales. Si se omiten parámetros, el bot **crea canales nuevos** automáticamente (requiere permisos de gestión). Si se especifican canales preexistentes, valida los permisos de acceso e informa al administrador de cualquier ajuste manual requerido. | `canal_moderacion` (opcional), `canal_publico` (opcional) |
+| `/confesiones_setup` | Configura los canales para moderación y publicación de confesiones. Ambos parámetros son requeridos. Si ya existe una configuración activa, solicita confirmación con botones interactivos antes de reemplazarla. | `canal_moderacion` (requerido), `canal_publico` (requerido) |
+| `/confesiones_config` | Consulta la configuración actual de canales del sistema de confesiones y valida los permisos de acceso del bot. | Ninguno |
+| `/confesiones_deshacer_setup` | Deshace la configuración de confesiones: el bot olvida los canales configurados para permitir volver a configurarlos. (Alias: `/deshacer_setup`). | Ninguno |
 | `/tictactoe` | Inicia una partida de 3 en raya contra el bot. | `dificultad` (opcional: Fácil/Difícil, por defecto Fácil) |
 
 ## Sistema de Confesiones

@@ -236,7 +236,7 @@ pub async fn confesion(
     let Some(config) = config_guard.as_ref() else {
         ctx.send(
             poise::CreateReply::default()
-                .content("❌ El sistema de confesiones no está configurado. Un administrador debe ejecutar `/confesiones-setup`.")
+                .content("❌ El sistema de confesiones no está configurado. Un administrador debe ejecutar `/confesiones_setup`.")
                 .ephemeral(true),
         )
         .await?;
@@ -260,7 +260,7 @@ pub async fn confesion(
 
                 ctx.send(
                     poise::CreateReply::default()
-                        .content("❌ Los canales configurados de confesiones ya no existen. Un administrador debe ejecutar `/confesiones-setup` nuevamente.")
+                        .content("❌ Los canales configurados de confesiones ya no existen. Un administrador debe ejecutar `/confesiones_setup` nuevamente.")
                         .ephemeral(true),
                 )
                 .await?;
@@ -325,6 +325,14 @@ mod tests {
         // Assert
         assert_eq!(json["fields"][0]["name"], "📝 Editado por moderación");
         assert_eq!(json["fields"][0]["value"], note);
+    }
+
+    #[test]
+    fn test_build_public_embed_with_whitespace_note_ignores_note() {
+        let text = "Texto confesión";
+        let embed = build_public_embed(text, Some("   "));
+        let json = serde_json::to_value(&embed).unwrap();
+        assert!(json["fields"].is_null() || json["fields"].as_array().map_or(true, |f| f.is_empty()));
     }
 
     #[test]

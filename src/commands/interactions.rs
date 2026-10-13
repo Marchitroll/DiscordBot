@@ -57,8 +57,15 @@ pub async fn handle_interaction(
                         None => ("", "", None),
                     };
 
+                    // Si el texto difiere del original o hay notas, asegurar que el canal público indique la edición
+                    let effective_note = match (edit_note, text != original) {
+                        (Some(note), _) if !note.trim().is_empty() => Some(note),
+                        (_, true) => Some("• Editado por moderación"),
+                        _ => None,
+                    };
+
                     // Publicar en canal público
-                    let public_embed = build_public_embed(text, edit_note);
+                    let public_embed = build_public_embed(text, effective_note);
                     if let Err(err) = public_channel
                         .send_message(ctx, serenity::CreateMessage::new().embed(public_embed))
                         .await
@@ -72,7 +79,7 @@ pub async fn handle_interaction(
                                         ctx,
                                         serenity::CreateInteractionResponse::Message(
                                             serenity::CreateInteractionResponseMessage::new()
-                                                .content("❌ El canal público de confesiones ya no existe. Un administrador debe ejecutar `/confesiones-setup` nuevamente.")
+                                                .content("❌ El canal público de confesiones ya no existe. Un administrador debe ejecutar `/confesiones_setup` nuevamente.")
                                                 .ephemeral(true),
                                         ),
                                     )
@@ -134,11 +141,11 @@ pub async fn handle_interaction(
                             serenity::CreateActionRow::InputText(
                                 serenity::CreateInputText::new(
                                     serenity::InputTextStyle::Short,
-                                    "Descripción de cambios",
+                                    "Motivo de la edición (requerido)",
                                     "edit_description",
                                 )
-                                .placeholder("Ej: Palabrota cambiada por término suave")
-                                .required(false),
+                                .placeholder("Ej: Se removió lenguaje ofensivo")
+                                .required(true),
                             ),
                         ]);
 
@@ -198,14 +205,45 @@ pub async fn handle_interaction(
                     }
                 }
 
+                let trimmed_desc = edit_desc.trim();
+                let trimmed_text = new_text.trim();
+
+                if trimmed_desc.is_empty() {
+                    modal
+                        .create_response(
+                            ctx,
+                            serenity::CreateInteractionResponse::Message(
+                                serenity::CreateInteractionResponseMessage::new()
+                                    .content("❌ Para editar una confesión es obligatorio especificar un motivo. La edición no fue aplicada.")
+                                    .ephemeral(true),
+                            ),
+                        )
+                        .await?;
+                    return Ok(());
+                }
+
+                if trimmed_text.is_empty() {
+                    modal
+                        .create_response(
+                            ctx,
+                            serenity::CreateInteractionResponse::Message(
+                                serenity::CreateInteractionResponseMessage::new()
+                                    .content("❌ El texto de la confesión no puede quedar vacío. La edición no fue aplicada.")
+                                    .ephemeral(true),
+                            ),
+                        )
+                        .await?;
+                    return Ok(());
+                }
+
                 let mod_data = message.embeds.first().map(extract_mod_embed_data);
-                let original = mod_data.as_ref().map_or(&new_text[..], |d| d.original_text);
+                let original = mod_data.as_ref().map_or(trimmed_text, |d| d.original_text);
                 let existing_notes = mod_data.as_ref().and_then(|d| d.edit_notes);
 
-                let updated_notes = crate::commands::confession::format_edit_notes(existing_notes, &edit_desc);
+                let updated_notes = crate::commands::confession::format_edit_notes(existing_notes, trimmed_desc);
 
                 let mod_status = format!("✏️ Editada por <@{}> (Pendiente)", modal.user.id);
-                let mod_embed = build_mod_embed(&new_text, &mod_status, updated_notes.as_deref(), original);
+                let mod_embed = build_mod_embed(trimmed_text, &mod_status, updated_notes.as_deref(), original);
                 let enabled_buttons = vec![build_action_buttons(true)];
 
                 modal
